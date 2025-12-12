@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="أداة ذكية لمقارنة وتحليل ملفات Excel و CSV مع قدرات مطابقة ذكية">
+    <meta name="keywords" content="Excel, CSV, مقارنة, تحليل, بيانات, Smart Match">
+    <title>Excel Smart Compare | مقارنة الشيتات الذكية</title>
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/rtl.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div class="logo-text">
+                    <h1>Excel Smart Compare</h1>
+                    <p>مقارنة وتحليل الملفات بذكاء</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="themeToggle" class="btn btn-icon btn-secondary" title="تبديل الثيم">☀️</button>
+                <button id="helpBtn" class="btn btn-secondary">
+                    <span>❓</span>
+                    <span>مساعدة</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Upload Section -->
+        <section class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>📁</span>
+                        رفع الملفات
+                    </h2>
+                    <span class="text-muted">يمكنك رفع 2-10 ملفات</span>
+                </div>
+
+                <div id="uploadZone" class="upload-zone">
+                    <div class="upload-icon">📂</div>
+                    <h3 class="upload-title">اسحب الملفات هنا أو اضغط للاختيار</h3>
+                    <p class="upload-subtitle">قم برفع ملفات Excel أو CSV للمقارنة</p>
+                    <div class="upload-formats">
+                        <span class="format-badge">XLSX</span>
+                        <span class="format-badge">XLS</span>
+                        <span class="format-badge">CSV</span>
+                    </div>
+                </div>
+
+                <input type="file" id="fileInput" multiple accept=".xlsx,.xls,.csv" hidden>
+
+                <div id="fileList" class="file-list"></div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settingsPanel" class="section section-hidden">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>⚙️</span>
+                        إعدادات المقارنة
+                    </h2>
+                </div>
+
+                <div class="settings-panel">
+                    <div class="setting-group">
+                        <label class="setting-label">عمود المفتاح (ID)</label>
+                        <div class="select-wrapper">
+                            <select id="keyColumnSelect">
+                                <option value="">-- اختر العمود --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">نسبة التشابه المطلوبة</label>
+                        <div class="select-wrapper">
+                            <select id="thresholdSelect">
+                                <option value="0.9">90% - عالية جداً</option>
+                                <option value="0.75" selected>75% - متوسطة (موصى بها)</option>
+                                <option value="0.6">60% - منخفضة</option>
+                                <option value="0.5">50% - ضعيفة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">&nbsp;</label>
+                        <button id="compareBtn" class="btn btn-primary btn-lg" disabled>
+                            <span>🔍</span>
+                            <span>بدء المقارنة</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="section section-hidden">
+            <!-- Statistics Cards -->
+            <div id="statsGrid" class="stats-grid">
+                <!-- Stats will be inserted here dynamically -->
+            </div>
+
+            <!-- Results Table Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>📋</span>
+                        نتائج المقارنة
+                    </h2>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="all">
+                        <span>📊</span>
+                        <span>الكل</span>
+                        <span class="tab-count">0</span>
+                    </button>
+                    <button class="tab" data-tab="matched">
+                        <span>✓</span>
+                        <span>متطابق</span>
+                        <span class="tab-count">0</span>
+                    </button>
+                    <button class="tab" data-tab="similar">
+                        <span>≈</span>
+                        <span>متشابه</span>
+                        <span class="tab-count">0</span>
+                    </button>
+                    <button class="tab" data-tab="missing">
+                        <span>?</span>
+                        <span>مفقود</span>
+                        <span class="tab-count">0</span>
+                    </button>
+                    <button class="tab" data-tab="conflicts">
+                        <span>!</span>
+                        <span>تناقض</span>
+                        <span class="tab-count">0</span>
+                    </button>
+                </div>
+
+                <!-- Search & Filter -->
+                <div class="toolbar">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="بحث في النتائج...">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div id="resultsTable">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-title">لا توجد نتائج</div>
+                        <div class="empty-state-text">قم برفع الملفات وابدأ المقارنة</div>
+                    </div>
+                </div>
+
+                <!-- Export Buttons -->
+                <div class="export-bar">
+                    <button id="exportExcel" class="btn btn-success">
+                        <span>📥</span>
+                        <span>تصدير Excel</span>
+                    </button>
+                    <button id="exportCSV" class="btn btn-secondary">
+                        <span>📄</span>
+                        <span>تصدير CSV</span>
+                    </button>
+                    <button id="exportPDF" class="btn btn-secondary">
+                        <span>📑</span>
+                        <span>تصدير PDF</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section mt-6">
+            <div class="stats-grid">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎯</div>
+                    <h3 style="margin-bottom: 0.5rem;">تطابق دقيق</h3>
+                    <p class="text-muted" style="font-size: 0.875rem;">اكتشاف القيم المتطابقة 100%</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🧠</div>
+                    <h3 style="margin-bottom: 0.5rem;">مطابقة ذكية</h3>
+                    <p class="text-muted" style="font-size: 0.875rem;">خوارزميات Fuzzy للتشابه</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🌍</div>
+                    <h3 style="margin-bottom: 0.5rem;">دعم العربية</h3>
+                    <p class="text-muted" style="font-size: 0.875rem;">تطبيع النصوص العربية</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📊</div>
+                    <h3 style="margin-bottom: 0.5rem;">تقارير شاملة</h3>
+                    <p class="text-muted" style="font-size: 0.875rem;">تصدير بصيغ متعددة</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.875rem;">
+            <p>Excel Smart Compare © 2024 - أداة مقارنة الشيتات الذكية</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loadingText">جاري التحميل...</p>
+        <div class="progress-container" style="width: 200px;">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📚 دليل الاستخدام</h3>
+                <button class="modal-close" onclick="document.getElementById('helpModal').classList.remove('active')">×</button>
+            </div>
+            <div class="modal-body">
+                <h4>🚀 كيفية الاستخدام:</h4>
+                <ol style="margin: 1rem 0; padding-right: 1.5rem; line-height: 2;">
+                    <li>قم برفع ملفين أو أكثر (Excel أو CSV)</li>
+                    <li>اختر عمود المفتاح (ID, الاسم, الكود...)</li>
+                    <li>اختر نسبة التشابه المطلوبة</li>
+                    <li>اضغط على "بدء المقارنة"</li>
+                    <li>استعرض النتائج وقم بالتصدير</li>
+                </ol>
+                
+                <h4>📊 أنواع النتائج:</h4>
+                <ul style="margin: 1rem 0; padding-right: 1.5rem; line-height: 2;">
+                    <li><strong style="color: var(--status-matched);">متطابق ✓</strong> - القيم متطابقة 100%</li>
+                    <li><strong style="color: var(--status-similar);">متشابه ≈</strong> - تشابه بنسبة عالية</li>
+                    <li><strong style="color: var(--status-missing);">مفقود ?</strong> - غير موجود في بعض الشيتات</li>
+                    <li><strong style="color: var(--status-conflict);">تناقض !</strong> - نفس المفتاح لكن بيانات مختلفة</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="js/arabicNormalizer.js"></script>
+    <script src="js/fileParser.js"></script>
+    <script src="js/keyDetector.js"></script>
+    <script src="js/matcher.js"></script>
+    <script src="js/reporter.js"></script>
+    <script src="js/exporter.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- Inline script for help modal -->
+    <script>
+        document.getElementById('helpBtn')?.addEventListener('click', () => {
+            document.getElementById('helpModal').classList.add('active');
+        });
+        
+        document.getElementById('helpModal')?.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

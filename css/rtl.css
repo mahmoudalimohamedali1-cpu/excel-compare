@@ -1,0 +1,100 @@
+/* ===================================
+   RTL (Right-to-Left) Support for Arabic
+   =================================== */
+
+html[dir="rtl"],
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Flip icons and elements that need mirroring */
+[dir="rtl"] .select-wrapper::after {
+    right: var(--space-4);
+    left: auto;
+}
+
+[dir="rtl"] .select-wrapper select {
+    padding-right: var(--space-10);
+    padding-left: var(--space-4);
+}
+
+[dir="rtl"] .search-box input {
+    padding-left: var(--space-10);
+    padding-right: var(--space-4);
+}
+
+[dir="rtl"] .search-box .search-icon {
+    left: var(--space-4);
+    right: auto;
+}
+
+[dir="rtl"] .toast {
+    border-right: none;
+    animation: slideInLeft 0.3s ease;
+}
+
+[dir="rtl"] .toast.success {
+    border-left: 4px solid var(--success-500);
+}
+
+[dir="rtl"] .toast.error {
+    border-left: 4px solid var(--danger-500);
+}
+
+[dir="rtl"] .toast.warning {
+    border-left: 4px solid var(--warning-500);
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+[dir="rtl"] .toast-container {
+    left: auto;
+    right: var(--space-6);
+}
+
+/* Table alignment */
+[dir="rtl"] .data-table th,
+[dir="rtl"] .data-table td {
+    text-align: right;
+}
+
+/* Button icon order */
+[dir="rtl"] .btn {
+    flex-direction: row-reverse;
+}
+
+/* File item layout */
+[dir="rtl"] .file-item {
+    flex-direction: row-reverse;
+}
+
+/* Export bar alignment */
+[dir="rtl"] .export-bar {
+    justify-content: flex-end;
+}
+
+/* Card header alignment */
+[dir="rtl"] .card-header {
+    flex-direction: row-reverse;
+}
+
+/* Logo layout */
+[dir="rtl"] .logo {
+    flex-direction: row-reverse;
+}
+
+/* Modal close button */
+[dir="rtl"] .modal-close {
+    order: -1;
+}
